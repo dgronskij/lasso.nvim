@@ -35,7 +35,7 @@ function M.mark_file()
     local marks_tracker_bufnr = get_marks_tracker_bufnr()
 
     local buffer_name = vim.fn.expand('%')
-    local file_path = vim.fn.fnamemodify(buffer_name, ':~:.')
+    local file_path = vim.fn.fnamemodify(buffer_name, ':p')
 
     local lines = vim.api.nvim_buf_get_lines(marks_tracker_bufnr, 0, -1, false)
     for _, line in ipairs(lines) do

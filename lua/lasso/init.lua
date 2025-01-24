@@ -16,12 +16,17 @@ end
 local function get_marks_tracker_bufnr()
     local existing_marks_tracker_bufnr = vim.fn.bufnr(config.marks_tracker_path)
     if existing_marks_tracker_bufnr ~= -1 then
+        vim.fn.bufload(existing_marks_tracker_bufnr) -- https://github.com/neovim/neovim/issues/7688
         return existing_marks_tracker_bufnr
     end
 
-    local new_marks_tracker_bufnr = vim.api.nvim_create_buf(false, false)
-    vim.api.nvim_buf_set_name(new_marks_tracker_bufnr, config.marks_tracker_path)
-    vim.api.nvim_buf_call(new_marks_tracker_bufnr, vim.cmd.edit)
+    -- local new_marks_tracker_bufnr = vim.api.nvim_create_buf(false, false)
+    -- vim.api.nvim_buf_set_name(new_marks_tracker_bufnr, config.marks_tracker_path)
+    -- vim.api.nvim_buf_call(new_marks_tracker_bufnr, vim.cmd.edit)
+
+    -- above way lead to buffer being visible in tabline
+    new_marks_tracker_bufnr = vim.fn.bufadd(config.marks_tracker_path)
+    vim.fn.bufload( new_marks_tracker_bufnr )
 
     return new_marks_tracker_bufnr
 end
@@ -37,7 +42,7 @@ function M.mark_file()
     local buffer_name = vim.fn.expand('%')
     local file_path = vim.fn.fnamemodify(buffer_name, ':p')
 
-    local lines = vim.api.nvim_buf_get_lines(marks_tracker_bufnr, 0, -1, false)
+    local lines = vim.api.nvim_buf_get_lines(marks_tracker_bufnr, 0, -1, false) -- MAKE SURE THE BUFFER IS LOADED
     for _, line in ipairs(lines) do
         if line == file_path then return end
     end
